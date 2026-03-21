@@ -43,6 +43,27 @@ class GoldMiningOLS:
         
         return df_out
     
+    def _get_multi_alpha(self, df: pd.DataFrame, window: int = 30) -> pd.DataFrame:
+        
+        df_tmp       = df.dropna().sort_index()
+        exog_tickers = [ticker for ticker in df_tmp.columns.to_list() if ticker != "endog_rtn"]
+        
+        df_out = (RollingOLS(
+            endog  = df_tmp.endog_rtn,
+            exog   = sm.add_constant(df_tmp[exog_tickers]),
+            window = window).
+            fit().
+            params.
+            rename(columns = {"const": "alpha"}).
+            reset_index().
+            melt(id_vars = ["date", "alpha"]).
+            assign(variable = lambda x: x.variable + "_beta").
+            pivot(index = ["date", "alpha"], columns = "variable", values = "value").
+            reset_index().
+            merge(right = df, how = "inner", on = ["date"]))
+        
+        return df_out
+    
     def run_ols(self, window: int = 30, verbose: bool = True) -> None: 
         
         out_path = os.path.join(self.data_path, "GoldMinersAlpha.parquet")
@@ -137,8 +158,66 @@ class GoldMiningOLS:
             df_ols.to_parquet(path = out_path, engine = "pyarrow")
             
         else: 
-            if verbose: print("Already Saved Data")
+            if verbose: print("Already Saved Single Endog Data")
+            
+    def run_multi_ols(self, window: int = 30, verbose: bool = True) -> None: 
+        
+        out_path = os.path.join(self.data_path, "MultiGoldMinersAlpha.parquet")
+        if os.path.exists(out_path) == False: 
+        
+            if verbose: print("Generating Gold Mining Equity Alpha\n")    
+        
+            raw_path = os.path.join(self.data_path, "GoldMiners.parquet")    
+            etf_path = os.path.join(self.data_path, "eq_px.parquet")
+            
+            df_raw = (pd.read_parquet(
+                path = raw_path).
+                reset_index())
+            
+            df_rtn = (df_raw.assign(
+                date = lambda x: pd.to_datetime(x.Date).dt.tz_convert("America/New_York").dt.date).
+                pivot(index = "date", columns = "ticker", values = "Adj Close").
+                pct_change().
+                reset_index().
+                melt(id_vars = "date", value_name = "rtn").
+                dropna())
+            
+            df_exog_tickers = (self.df_tickers[
+                ["benchmark", "country_benchmark", "yf_ticker"]].
+                assign(gdx = "GDX").
+                melt(id_vars = "yf_ticker").
+                drop(columns = ["yf_ticker"]).
+                drop_duplicates())
+            
+            exog_tickers = df_exog_tickers.value.drop_duplicates().to_list()
+            
+            df_exog = (df_rtn.query(
+                "ticker == @exog_tickers").
+                assign(ticker = lambda x: x.ticker.str.replace("^", "")).
+                pivot(index = "date", columns = "ticker", values = "rtn").
+                dropna())
+            
+            df_endog = (df_rtn.query(
+                "ticker != @exog_tickers").
+                rename(columns = {
+                    "ticker": "endog_ticker",
+                    "rtn"   : "endog_rtn"}))
+            
+            df_ols = (df_endog.merge(
+                right = df_exog, how = "inner", on = ["date"]).
+                set_index("date").
+                groupby("endog_ticker").
+                apply(self._get_multi_alpha, include_groups = False).
+                reset_index().
+                drop(columns = ["level_1"]))
+            
+            if verbose: print("\nSaving data")
+            df_ols.to_parquet(path = out_path, engine = "pyarrow")
+            
+        else: 
+            if verbose: print("Already Saved Multi Exog Data")
 
 data_path       = os.path.join(os.getcwd(), "data")
 gold_mining_ols = GoldMiningOLS(data_path)
-gold_mining_ols.run_ols()
+#gold_mining_ols.run_ols()
+gold_mining_ols.run_multi_ols()
