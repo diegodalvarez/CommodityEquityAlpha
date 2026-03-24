@@ -5,14 +5,20 @@ The first set of strategies are developed using ETFs of commodity companies whic
 
 Below is the performance summary statistics for the model
 
-| Commod Group            |   Perfect Vol. Target |   Lagged Vol. Target |
+| Name                    |   Perfect Vol. Target |   Lagged Vol. Target |
 |:------------------------|----------------------:|---------------------:|
-| Agribusiness            |                 1.244 |                1.272 |
-| Copper and Green Metals |                 0.824 |                0.379 |
-| Oil Refiners            |                 0.531 |                0.249 |
-| Oil Services            |                 1.075 |                0.976 |
-| Gold Miners             |                 0.962 |                0.791 |
+| Agribusiness            |                 1.25  |                1.279 |
+| Copper and Green Metals |                 1.693 |                1.231 |
+| Gold Miners             |                 0.969 |                0.792 |
+| Natural Resources       |                 1.639 |                1.43  |
+| Oil Refiners            |                 0.527 |                0.234 |
+| Oil Services            |                 1.064 |                0.966 |
 
-The individual strategies are can be combined into a portfolio that generates a portfolio of around 1.15-1.2 sharpe. 
+The individual strategies are can be combined into a portfolio that generates a portfolio of around 1.16-1.31 sharpe. 
 
 That model can be refined using single names stocks as well. The prior model looked at ETF alpha to trade commodities in ```2GoldModel.ipynb``` using the alpha of specific gold miners can achieve 0.8 - 1.15 sharpe. 
+
+## Writeup
+|         | PDF          |
+|---------|---------------------|
+| Technical writeup containing methodology & results | <a href="CommodityEquityAlpha.pdf">![PDF](https://img.icons8.com/ios-filled/50/000000/pdf.png)</a> |
