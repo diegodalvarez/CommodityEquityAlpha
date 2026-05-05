@@ -5,14 +5,10 @@ The first set of strategies are developed using ETFs of commodity companies whic
 
 Below is the performance summary statistics for the model
 
-| Name                    |   Perfect Vol. Target |   Lagged Vol. Target |
-|:------------------------|----------------------:|---------------------:|
-| Agribusiness            |                 1.25  |                1.279 |
-| Copper and Green Metals |                 1.693 |                1.231 |
-| Gold Miners             |                 0.969 |                0.792 |
-| Natural Resources       |                 1.639 |                1.43  |
-| Oil Refiners            |                 0.527 |                0.234 |
-| Oil Services            |                 1.064 |                0.966 |
+|         |   30% Sample |   50% Sample |   70% Sample |   In-Sample |
+|:--------|-------------:|-------------:|-------------:|------------:|
+| Lagged  |      1.58664 |      1.42782 |      1.31347 |     1.72743 |
+| Perfect |      1.71072 |      1.52767 |      1.54596 |     1.94355 |
 
 The individual strategies are can be combined into a portfolio that generates a portfolio of around 1.16-1.31 sharpe. 
 
