@@ -3,7 +3,7 @@ This repo explores trading strategies with commodity futures based on the equity
 
 The first set of strategies are developed using ETFs of commodity companies which can be found in ```1BaseModel.ipynb```
 
-Below is the performance summary statistics for the model
+Below is the performance summary statistics for the model for lagged and perfect volatility target at 10% annualized volatility.
 
 |         |   30% Sample |   50% Sample |   70% Sample |   In-Sample |
 |:--------|-------------:|-------------:|-------------:|------------:|
